@@ -1,4 +1,4 @@
-package by.artur.internship.model.dto;
+package by.artur.internship.dto;
 
 import lombok.Data;
 

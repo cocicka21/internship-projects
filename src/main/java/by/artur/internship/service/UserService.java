@@ -1,13 +1,13 @@
 package by.artur.internship.service;
 
+import by.artur.internship.dto.ChangeUserDto;
+import by.artur.internship.dto.RegistrationRequest;
+import by.artur.internship.dto.UserDto;
+import by.artur.internship.entity.Credential;
+import by.artur.internship.entity.Role;
+import by.artur.internship.entity.User;
 import by.artur.internship.exception.AlreadyExistsException;
 import by.artur.internship.exception.NotFoundException;
-import by.artur.internship.model.dao.Credential;
-import by.artur.internship.model.dao.Role;
-import by.artur.internship.model.dao.User;
-import by.artur.internship.model.dto.ChangeUserDto;
-import by.artur.internship.model.dto.RegistrationRequest;
-import by.artur.internship.model.dto.UserDto;
 import by.artur.internship.repository.RoleRepository;
 import by.artur.internship.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,7 @@ public class UserService {
     public UserDto createUser(RegistrationRequest registrationRequest) {
         if (!userRepository.existsByFirstName(registrationRequest.getFirstname())) {
             Set<Role> roles = new HashSet<>();
-            Role role = roleRepository.findByName("user").get();
+            Role role = roleRepository.findByName("user").orElseThrow(() -> new NotFoundException("Role is not found"));
             roles.add(role);
             User user = User.builder()
                     .firstName(registrationRequest.getFirstname())
@@ -61,9 +61,10 @@ public class UserService {
                     .roles(roles)
                     .build();
             saveUser(user);
-            Credential credential = new Credential();
-            credential.setEmail(registrationRequest.getEmail());
-            credential.setPassword(registrationRequest.getPassword());
+            Credential credential = Credential.builder()
+                    .email(registrationRequest.getEmail())
+                    .password(registrationRequest.getPassword())
+                    .build();
             credentialService.createCredential(credential);
             return mapper.map(user, UserDto.class);
         } else {
@@ -71,7 +72,7 @@ public class UserService {
         }
     }
 
-    public void updateUser(Long userId, ChangeUserDto dto) {
+    public UserDto updateUser(Long userId, ChangeUserDto dto) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -79,18 +80,20 @@ public class UserService {
             user.setLastName(dto.getLastName());
             user.getCredential().setEmail(dto.getEmail());
             saveUser(user);
+            return mapper.map(user, UserDto.class);
         } else {
             throw new NotFoundException("User is not found");
         }
     }
 
-    public void deleteUser(Long userId) {
+    public UserDto deleteUser(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             Credential credential = user.getCredential();
             credentialService.deleteCredential(credential);
             userRepository.delete(user);
+            return mapper.map(user, UserDto.class);
         } else {
             throw new NotFoundException("User is not found");
         }

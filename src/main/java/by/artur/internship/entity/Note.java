@@ -1,17 +1,12 @@
-package by.artur.internship.model.dao;
+package by.artur.internship.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Builder
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
@@ -20,11 +15,16 @@ import java.time.LocalDateTime;
 public class Note extends BasicEntity {
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
-    @Column(name = "title")
+
+    @Column(name = "title", length = 50)
     private String title;
 
+    @Column(name = "text", length = 500)
     private String text;
+
+    @Column(name = "created_date")
     private LocalDateTime createdDate;
 
 }

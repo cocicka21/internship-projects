@@ -2,7 +2,7 @@ spring:
   application:
     name: internship
   datasource:
-    url: jdbc:postgresql://localhost:5433/myServiceDB
+    url: jdbc:postgresql://internshipDB:5432/myServiceDB
     username: test
     password: test
     driver-class-name: org.postgresql.Driver

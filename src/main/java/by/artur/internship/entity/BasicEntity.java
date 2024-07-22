@@ -1,4 +1,4 @@
-package by.artur.internship.model.dao;
+package by.artur.internship.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

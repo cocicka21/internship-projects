@@ -19,7 +19,7 @@
             <column name="title" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="text" type="varchar(50)">
+            <column name="text" type="varchar(500)">
                 <constraints nullable="false"/>
             </column>
             <column name="created_date" type="datetime(6)">

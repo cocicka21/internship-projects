@@ -1,6 +1,6 @@
 package by.artur.internship.repository;
 
-import by.artur.internship.model.dao.Credential;
+import by.artur.internship.entity.Credential;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

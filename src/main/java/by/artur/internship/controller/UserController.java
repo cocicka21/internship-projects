@@ -1,11 +1,10 @@
 package by.artur.internship.controller;
 
-import by.artur.internship.model.dto.ChangeUserDto;
-import by.artur.internship.model.dto.RegistrationRequest;
-import by.artur.internship.model.dto.UserDto;
+import by.artur.internship.dto.ChangeUserDto;
+import by.artur.internship.dto.RegistrationRequest;
+import by.artur.internship.dto.UserDto;
 import by.artur.internship.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +19,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
-        return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
+        return ResponseEntity.ok(userService.getUsers());
     }
 
     @PostMapping
@@ -30,18 +29,17 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable("id") Long userId) {
-        return new ResponseEntity<>(userService.getUser(userId), HttpStatus.OK);
+        return ResponseEntity.ok(userService.getUser(userId));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") Long userId) {
-        userService.deleteUser(userId);
-        return ResponseEntity.ok("OK");
+    public ResponseEntity<UserDto> deleteUser(@PathVariable("id") Long userId) {
+        return ResponseEntity.ok(userService.deleteUser(userId));
     }
 
-    public ResponseEntity<String> updateUser(@PathVariable("id") Long userId, @RequestBody ChangeUserDto dto) {
-        userService.updateUser(userId, dto);
-        return new ResponseEntity<>("OK", HttpStatus.OK);
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable("id") Long userId, @RequestBody ChangeUserDto dto) {
+        return ResponseEntity.ok(userService.updateUser(userId, dto));
     }
 
 }

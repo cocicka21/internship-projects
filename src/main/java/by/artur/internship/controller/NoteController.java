@@ -1,8 +1,8 @@
 package by.artur.internship.controller;
 
-import by.artur.internship.model.dto.EditNoteDto;
-import by.artur.internship.model.dto.NoteDto;
-import by.artur.internship.model.dto.projection.NoteView;
+import by.artur.internship.dto.EditNoteDto;
+import by.artur.internship.dto.NoteDto;
+import by.artur.internship.entity.projection.NoteView;
 import by.artur.internship.service.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +17,18 @@ public class NoteController {
 
     private final NoteService noteService;
 
-    @PostMapping("/user/{userId}")
-    public ResponseEntity<String> creteNote(@PathVariable("userId") Long userId, @RequestBody EditNoteDto note) {
-        noteService.createNote(userId, note);
-        return ResponseEntity.ok("Note created successfully");
+    @GetMapping
+    public ResponseEntity<List<NoteDto>> getNotes() {
+        return ResponseEntity.ok(noteService.getNotes());
     }
 
-    @GetMapping
-    public ResponseEntity<NoteDto> getNotes(Long noteId) {
+    @PostMapping
+    public ResponseEntity<NoteDto> creteNote(@RequestHeader("userId") Long userId, @RequestBody EditNoteDto note) {
+        return ResponseEntity.ok(noteService.createNote(userId, note));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<NoteDto> getNote(@PathVariable("id") Long noteId) {
         return ResponseEntity.ok(noteService.getNoteById(noteId));
     }
 
@@ -34,15 +38,13 @@ public class NoteController {
     }
 
     @PatchMapping("/{noteId}")
-    public ResponseEntity<String> updateNote(@PathVariable("noteId") Long noteId, @RequestBody EditNoteDto note) {
-        noteService.updateNote(noteId, note);
-        return ResponseEntity.ok("Note updated successfully");
+    public ResponseEntity<NoteDto> updateNote(@PathVariable("noteId") Long noteId, @RequestBody EditNoteDto note) {
+        return ResponseEntity.ok(noteService.updateNote(noteId, note));
     }
 
     @DeleteMapping("/{noteId}")
-    public ResponseEntity<String> deleteNote(@PathVariable("noteId") Long noteId) {
-        noteService.deleteNote(noteId);
-        return ResponseEntity.ok("Note deleted successfully");
+    public ResponseEntity<NoteDto> deleteNote(@PathVariable("noteId") Long noteId) {
+        return ResponseEntity.ok(noteService.deleteNote(noteId));
     }
 
 }

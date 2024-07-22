@@ -1,13 +1,11 @@
-package by.artur.internship.model.dao;
+package by.artur.internship.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
+@Builder
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)

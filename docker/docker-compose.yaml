@@ -3,6 +3,7 @@ version: "3.9"
 services:
   internshipDB:
     image: postgres
+    container_name: internshipDB
     restart: always
     environment:
       POSTGRES_USER: test
@@ -10,4 +11,15 @@ services:
       POSTGRES_DB: myServiceDB
     ports:
       - "5433:5432"
-#    volumes:
+    volumes:
+      - ".db/changelog/v1:/var/lib/postgresql/data"
+
+  internship:
+    image: 'internship'
+    container_name: internship
+    build:
+      context: .
+    depends_on:
+      - internshipDB
+    ports:
+      - "8080:8080"

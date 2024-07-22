@@ -1,4 +1,4 @@
-package by.artur.internship.model.dao;
+package by.artur.internship.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringExclude;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,14 +22,21 @@ public class User extends BasicEntity implements Serializable {
 
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
+
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
+
     @Column(name = "registration_date", nullable = false)
     private LocalDateTime registrationDate;
-    @OneToOne(fetch = FetchType.LAZY)
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Note> notes;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id", referencedColumnName = "id")
     @ToStringExclude
     private Credential credential;
+
     @ManyToMany
     @JoinTable(
             name = "user_role",
