@@ -1,5 +1,6 @@
 package by.artur.internship.service;
 
+import by.artur.internship.annotation.CustomLogger;
 import by.artur.internship.dto.ChangeUserDto;
 import by.artur.internship.dto.RegistrationRequest;
 import by.artur.internship.dto.UserDto;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -36,24 +36,25 @@ public class UserService {
     }
 
     public UserDto getUser(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            return mapper.map(user, UserDto.class);
-        } else {
-            throw new NotFoundException("User is not found");
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User is not found"));
+        return mapper.map(user, UserDto.class);
     }
 
     public User saveUser(User user) {
         return userRepository.save(user);
     }
 
+    @CustomLogger
     public UserDto createUser(RegistrationRequest registrationRequest) {
         if (!userRepository.existsByFirstName(registrationRequest.getFirstname())) {
             Set<Role> roles = new HashSet<>();
             Role role = roleRepository.findByName("user").orElseThrow(() -> new NotFoundException("Role is not found"));
             roles.add(role);
+            Credential credential = Credential.builder()
+                    .email(registrationRequest.getEmail())
+                    .password(registrationRequest.getPassword())
+                    .build();
+            credentialService.createCredential(credential);
             User user = User.builder()
                     .firstName(registrationRequest.getFirstname())
                     .lastName(registrationRequest.getLastname())
@@ -61,11 +62,7 @@ public class UserService {
                     .roles(roles)
                     .build();
             saveUser(user);
-            Credential credential = Credential.builder()
-                    .email(registrationRequest.getEmail())
-                    .password(registrationRequest.getPassword())
-                    .build();
-            credentialService.createCredential(credential);
+
             return mapper.map(user, UserDto.class);
         } else {
             throw new AlreadyExistsException("User already exists");
@@ -73,30 +70,18 @@ public class UserService {
     }
 
     public UserDto updateUser(Long userId, ChangeUserDto dto) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setFirstName(dto.getFirstName());
-            user.setLastName(dto.getLastName());
-            user.getCredential().setEmail(dto.getEmail());
-            saveUser(user);
-            return mapper.map(user, UserDto.class);
-        } else {
-            throw new NotFoundException("User is not found");
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User is not found"));
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.getCredential().setEmail(dto.getEmail());
+        saveUser(user);
+        return mapper.map(user, UserDto.class);
     }
 
     public UserDto deleteUser(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            Credential credential = user.getCredential();
-            credentialService.deleteCredential(credential);
-            userRepository.delete(user);
-            return mapper.map(user, UserDto.class);
-        } else {
-            throw new NotFoundException("User is not found");
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User is not found"));
+        userRepository.deleteById(userId);
+        return mapper.map(user, UserDto.class);
 
     }
 }

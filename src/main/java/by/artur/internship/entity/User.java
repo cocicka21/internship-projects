@@ -3,6 +3,8 @@ package by.artur.internship.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.builder.ToStringExclude;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -29,11 +31,12 @@ public class User extends BasicEntity implements Serializable {
     @Column(name = "registration_date", nullable = false)
     private LocalDateTime registrationDate;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Note> notes;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "id", referencedColumnName = "id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ToStringExclude
     private Credential credential;
 

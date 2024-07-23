@@ -32,7 +32,7 @@ public class NoteController {
         return ResponseEntity.ok(noteService.getNoteById(noteId));
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<NoteView>> getUserNotes(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(noteService.getUserNotes(userId));
     }

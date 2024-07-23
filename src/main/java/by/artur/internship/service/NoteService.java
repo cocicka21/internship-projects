@@ -1,5 +1,6 @@
 package by.artur.internship.service;
 
+import by.artur.internship.annotation.CustomLogger;
 import by.artur.internship.dto.EditNoteDto;
 import by.artur.internship.dto.NoteDto;
 import by.artur.internship.entity.Note;
@@ -23,6 +24,7 @@ public class NoteService {
     private final UserRepository userRepository;
     private final ModelMapper mapper;
 
+    @CustomLogger
     public NoteDto createNote(Long userId, EditNoteDto noteDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User is not found"));
         Note note = Note.builder()

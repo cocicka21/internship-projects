@@ -11,6 +11,8 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Table(name = "credentials")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Credential extends BasicEntity {
 
     private String email;

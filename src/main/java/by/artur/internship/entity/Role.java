@@ -11,6 +11,8 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Table(name = "roles")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Role extends BasicEntity {
 
     private String name;
