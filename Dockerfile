@@ -1,8 +1,11 @@
-FROM openjdk:21-jdk-slim AS build
+FROM maven:latest AS build
 WORKDIR /app
-COPY .mvn/ .mvn
+COPY pom.xml .
+COPY src ./src
 RUN mvn clean package
 
-FROM azul/zulu-openjdk:21-jre-latest
-COPY --from=build /app/target/*.jar /internship.jar
-CMD ["java", "-jar", "/internship.jar"]
+FROM openjdk:21-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/internship*.jar /app/internship.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app/internship.jar"]

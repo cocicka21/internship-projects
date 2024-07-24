@@ -16,9 +16,9 @@ services:
 
   internship:
     image: 'internship'
-    container_name: internship
     build:
       context: .
+      dockerfile: Dockerfile
     depends_on:
       - internshipDB
     ports:
