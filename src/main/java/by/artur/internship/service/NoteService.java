@@ -1,6 +1,5 @@
 package by.artur.internship.service;
 
-import by.artur.internship.annotation.CustomLogger;
 import by.artur.internship.dto.EditNoteDto;
 import by.artur.internship.dto.NoteDto;
 import by.artur.internship.entity.Note;
@@ -22,9 +21,9 @@ public class NoteService {
 
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
+    private final KafkaProducerService sender;
     private final ModelMapper mapper;
 
-    @CustomLogger
     public NoteDto createNote(Long userId, EditNoteDto noteDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User is not found"));
         Note note = Note.builder()
@@ -33,6 +32,7 @@ public class NoteService {
                 .text(noteDto.getText())
                 .createdDate(LocalDateTime.now())
                 .build();
+        sender.sendMessage(user.getId().toString(), "user with id:" + user.getId() + "created note " + note.getTitle());
         return mapper.map(noteRepository.save(note), NoteDto.class);
     }
 
@@ -54,12 +54,14 @@ public class NoteService {
         note.setTitle(changedNote.getTitle());
         note.setText(changedNote.getText());
         noteRepository.save(note);
+        sender.sendMessage(note.getUser().getId().toString(), "user with id:" + note.getUser().getId() + "change note " + note.getTitle());
         return mapper.map(note, NoteDto.class);
     }
 
     public NoteDto deleteNote(Long noteId) {
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new NotFoundException("Note is not found"));
         noteRepository.delete(note);
+        sender.sendMessage(note.getUser().getId().toString(), "user with id:" + note.getUser().getId() + "delete note " + note.getTitle());
         return mapper.map(note, NoteDto.class);
     }
 }

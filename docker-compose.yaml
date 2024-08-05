@@ -1,7 +1,7 @@
-version: "3.9"
+#version: "3.9"
 
 services:
-  internshipDB:
+  postgreSQL:
     image: postgres
     container_name: internshipDB
     restart: always
@@ -14,12 +14,64 @@ services:
     volumes:
       - ".db/changelog/v1:/var/lib/postgresql/data"
 
+  mongoDB:
+    image: mongo
+    container_name: mongoDB
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: test
+      MONGO_INITDB_ROOT_PASSWORD: test
+      MONGO_INITDB_DATABASE: storingDB
+    ports:
+      - "27018:27017"
+
   internship:
     image: 'internship'
     build:
-      context: .
+      context: intership
       dockerfile: Dockerfile
     depends_on:
-      - internshipDB
+      - postgreSQL
     ports:
       - "8080:8080"
+  zookeeper:
+    image: zookeeper:3.9.2
+    restart: "no"
+    ports:
+      - "2182:2181"
+  kafka:
+    image: bitnami/kafka:latest
+    restart: "no"
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka_data:/bitnami/kafka
+    environment:
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_KRAFT_CLUSTER_ID: home_test
+      KAFKA_CFG_PROCESS_ROLES: controller,broker
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://0.0.0.0:9092,CONTROLLER://kafka:9093
+    labels:
+      amplicode.image: bitnami/kafka
+    depends_on:
+      - zookeeper
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    restart: "no"
+    ports:
+      - "8989:8080"
+    environment:
+      DYNAMIC_CONFIG_ENABLED: "true"
+      KAFKA_CLUSTERS_0_NAME: pJHBBZR_QMGlRHcKtpeqBw
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      - kafka
+
+volumes:
+  kafka_data:

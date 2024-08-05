@@ -1,6 +1,6 @@
 package by.artur.internship.service;
 
-import by.artur.internship.annotation.CustomLogger;
+import aop.starter.annotation.CustomLogger;
 import by.artur.internship.dto.ChangeUserDto;
 import by.artur.internship.dto.RegistrationRequest;
 import by.artur.internship.dto.UserDto;
@@ -27,6 +27,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final CredentialService credentialService;
+    private final KafkaProducerService sender;
     private final ModelMapper mapper;
 
     public List<UserDto> getUsers() {
@@ -62,7 +63,7 @@ public class UserService {
                     .roles(roles)
                     .build();
             saveUser(user);
-
+            sender.sendMessage(user.getId().toString(), "user registration");
             return mapper.map(user, UserDto.class);
         } else {
             throw new AlreadyExistsException("User already exists");
@@ -75,12 +76,15 @@ public class UserService {
         user.setLastName(dto.getLastName());
         user.getCredential().setEmail(dto.getEmail());
         saveUser(user);
+        sender.sendMessage(user.getId().toString(), "user update");
         return mapper.map(user, UserDto.class);
     }
 
+    @CustomLogger
     public UserDto deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User is not found"));
         userRepository.deleteById(userId);
+        sender.sendMessage(user.getId().toString(), "user delete");
         return mapper.map(user, UserDto.class);
 
     }

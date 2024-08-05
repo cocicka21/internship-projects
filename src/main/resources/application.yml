@@ -2,7 +2,7 @@ spring:
   application:
     name: internship
   datasource:
-    url: jdbc:postgresql://internshipDB:5432/myServiceDB
+    url: jdbc:postgresql://postgreSQL:5432/myServiceDB
     username: test
     password: test
     driver-class-name: org.postgresql.Driver
@@ -16,8 +16,10 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     change-log: classpath:db/changelog/main-changelog.xml
+  kafka:
+    bootstrap-servers: localhost:9092
 
 server:
   servlet:
     context-path: /api
-  port: 8080
+  port: 8085
