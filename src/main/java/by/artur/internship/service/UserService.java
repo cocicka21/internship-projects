@@ -27,7 +27,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final CredentialService credentialService;
-    private final KafkaProducerService sender;
+    private final KafkaProducerService kafkaProducerService;
     private final ModelMapper mapper;
 
     public List<UserDto> getUsers() {
@@ -63,7 +63,7 @@ public class UserService {
                     .roles(roles)
                     .build();
             saveUser(user);
-            sender.sendMessage(user.getId().toString(), "user registration");
+            kafkaProducerService.sendMessage(user.getId().toString(), "user registration");
             return mapper.map(user, UserDto.class);
         } else {
             throw new AlreadyExistsException("User already exists");
@@ -76,7 +76,7 @@ public class UserService {
         user.setLastName(dto.getLastName());
         user.getCredential().setEmail(dto.getEmail());
         saveUser(user);
-        sender.sendMessage(user.getId().toString(), "user update");
+        kafkaProducerService.sendMessage(user.getId().toString(), "user update");
         return mapper.map(user, UserDto.class);
     }
 
@@ -84,7 +84,7 @@ public class UserService {
     public UserDto deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User is not found"));
         userRepository.deleteById(userId);
-        sender.sendMessage(user.getId().toString(), "user delete");
+        kafkaProducerService.sendMessage(user.getId().toString(), "user delete");
         return mapper.map(user, UserDto.class);
 
     }

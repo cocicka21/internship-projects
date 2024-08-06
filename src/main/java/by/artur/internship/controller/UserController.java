@@ -3,6 +3,8 @@ package by.artur.internship.controller;
 import by.artur.internship.dto.ChangeUserDto;
 import by.artur.internship.dto.RegistrationRequest;
 import by.artur.internship.dto.UserDto;
+import by.artur.internship.service.KafkaProducerService;
+import by.artur.internship.service.MQService;
 import by.artur.internship.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,19 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final KafkaProducerService kafkaProducerService;
+    private final MQService mqService;
+
+    @GetMapping("/test/kafka")
+    public void sendDataKafka() {
+        kafkaProducerService.sendMessage("1", "Hello");
+    }
+
+    @GetMapping("/test/mq")
+    public void sendDataMQ() {
+//        mqService.sendRabbitToMQ("1", "Hello");
+        mqService.sendRabbitToMQ("Hello");
+    }
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {

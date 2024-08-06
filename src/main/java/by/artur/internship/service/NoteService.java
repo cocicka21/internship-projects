@@ -21,7 +21,7 @@ public class NoteService {
 
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
-    private final KafkaProducerService sender;
+    private final MQService mqService;
     private final ModelMapper mapper;
 
     public NoteDto createNote(Long userId, EditNoteDto noteDto) {
@@ -32,7 +32,7 @@ public class NoteService {
                 .text(noteDto.getText())
                 .createdDate(LocalDateTime.now())
                 .build();
-        sender.sendMessage(user.getId().toString(), "user with id:" + user.getId() + "created note " + note.getTitle());
+//        mqService.sendRabbitToMQ(user.getId().toString(), "user with id:" + user.getId() + "created note " + note.getTitle());
         return mapper.map(noteRepository.save(note), NoteDto.class);
     }
 
@@ -54,14 +54,14 @@ public class NoteService {
         note.setTitle(changedNote.getTitle());
         note.setText(changedNote.getText());
         noteRepository.save(note);
-        sender.sendMessage(note.getUser().getId().toString(), "user with id:" + note.getUser().getId() + "change note " + note.getTitle());
+//        mqService.sendRabbitToMQ(note.getUser().getId().toString(), "user with id:" + note.getUser().getId() + "change note " + note.getTitle());
         return mapper.map(note, NoteDto.class);
     }
 
     public NoteDto deleteNote(Long noteId) {
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new NotFoundException("Note is not found"));
         noteRepository.delete(note);
-        sender.sendMessage(note.getUser().getId().toString(), "user with id:" + note.getUser().getId() + "delete note " + note.getTitle());
+//        mqService.sendRabbitToMQ(note.getUser().getId().toString(), "user with id:" + note.getUser().getId() + "delete note " + note.getTitle());
         return mapper.map(note, NoteDto.class);
     }
 }

@@ -18,6 +18,11 @@ spring:
     change-log: classpath:db/changelog/main-changelog.xml
   kafka:
     bootstrap-servers: localhost:9092
+  rabbitmq:
+    host: localhost
+    virtual-host: vhost
+    username: test
+    password: test
 
 server:
   servlet:

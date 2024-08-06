@@ -72,6 +72,19 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
     depends_on:
       - kafka
+  rabbitmq:
+    image: rabbitmq:latest
+    restart: "no"
+    environment:
+      TZ: Europe/Moscow
+      RABBITMQ_DEFAULT_USER: test
+      RABBITMQ_DEFAULT_PASS: test
+      RABBITMQ_DEFAULT_VHOST: vhost
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq￼
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 volumes:
   kafka_data:
