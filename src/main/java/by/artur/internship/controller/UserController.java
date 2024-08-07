@@ -28,8 +28,7 @@ public class UserController {
 
     @GetMapping("/test/mq")
     public void sendDataMQ() {
-//        mqService.sendRabbitToMQ("1", "Hello");
-        mqService.sendRabbitToMQ("Hello");
+        mqService.sendRabbitToMQ("1", "Hello");
     }
 
     @GetMapping

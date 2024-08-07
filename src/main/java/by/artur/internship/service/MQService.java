@@ -1,25 +1,26 @@
 package by.artur.internship.service;
 
+import by.artur.internship.dto.UserActionDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Service;
 
-import static by.artur.internship.utils.StringUtil.MQ_EXCHANGE;
-import static by.artur.internship.utils.StringUtil.MQ_KEY;
+import java.time.LocalDateTime;
+
+import static by.artur.internship.utils.StringUtil.MQ_QUEUE_NAME;
 
 @Service
 @RequiredArgsConstructor
 public class MQService {
 
-    private final RabbitTemplate rabbitTemplate;
+    private final AmqpTemplate rabbitTemplate;
 
-    public void sendRabbitToMQ(String message) {
-//    public void sendRabbitToMQ(String userId, String action) {
-//        UserActionDto dto = new UserActionDto();
-//        dto.setUserId(userId);
-//        dto.setAction(action);
-//        dto.setActionsDate(LocalDateTime.now());
-        rabbitTemplate.convertAndSend(MQ_EXCHANGE, MQ_KEY, message);
+    public void sendRabbitToMQ(String userId, String action) {
+        UserActionDto dto = new UserActionDto();
+        dto.setUserId(userId);
+        dto.setAction(action);
+        dto.setActionsDate(LocalDateTime.now());
+        rabbitTemplate.convertAndSend(MQ_QUEUE_NAME, dto);
     }
 
 }
