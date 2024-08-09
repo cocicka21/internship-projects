@@ -1,6 +1,6 @@
 spring:
   application:
-    name: internship
+    name: INTERNSHIP
   datasource:
     url: jdbc:postgresql://postgreSQL:5432/myServiceDB
     username: test
@@ -23,6 +23,13 @@ spring:
     virtual-host: vhost
     username: test
     password: test
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8090/eureka/
+    instance:
+      preferIpAddress: true
 
 server:
   servlet:
